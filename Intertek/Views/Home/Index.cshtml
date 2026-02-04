@@ -2,7 +2,104 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h2>Müşteriler</h2>
+
+    <h3 class="mt-4 text-primary">Tek ID'li Müşteriler</h3>
+    <div id="oddCustomersTable" class="mb-5">
+        <p>Tek ID'li müşteriler yükleniyor...</p>
+    </div>
+
+    <h3 class="mt-4 text-success">Çift ID'li Müşteriler</h3>
+    <div id="evenCustomersTable" class="mb-5">
+        <p>Çift ID'li müşteriler yükleniyor...</p>
+    </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '@Url.Action("GetTopSpendingCustomersAsync", "Customer")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // console.log("Gelen veri:", data);
+
+                if (data && Array.isArray(data)) {
+                    var oddCustomers = [];
+                    var evenCustomers = [];
+
+                    data.forEach(function(customer) {
+                        if (customer.customerId % 2 === 0) {
+                            evenCustomers.push(customer);
+                        } else {
+                            oddCustomers.push(customer);
+                        }
+                    });
+
+                    createCustomerTable(oddCustomers, "oddCustomersTable", "Tek ID'li Müşteriler");
+                    createCustomerTable(evenCustomers, "evenCustomersTable", "Çift ID'li Müşteriler");
+
+                } else {
+                    //console.error("Hata:", data);
+                }
+            }
+        });
+
+        function createCustomerTable(customers, containerId, title) {
+            if (customers.length === 0) {
+                $("#" + containerId).html("<p class='text-warning'>" + title + " bulunamadı.</p>");
+                return;
+            }
+
+            var html = '<div class="table-responsive">';
+            html += '<table class="table table-striped table-bordered table-hover">';
+            html += '<thead class="thead-dark">';
+            html += '<tr>';
+            html += '<th>ID</th>';
+            html += '<th>Müşteri Adı</th>';
+            html += '<th>Toplam Sipariş</th>';
+            html += '<th>Toplam Harcama</th>';
+            html += '<th>Ort. Sipariş Değeri</th>';
+            html += '<th>Son Sipariş Tarihi</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            customers.forEach(function(customer) {
+                var formattedDate = new Date(customer.lastOrderDate).toLocaleDateString('tr-TR');
+
+                var totalSpentFormatted = new Intl.NumberFormat('tr-TR', {
+                    style: 'currency',
+                    currency: 'TRY'
+                }).format(customer.totalSpent);
+
+                var avgOrderFormatted = new Intl.NumberFormat('tr-TR', {
+                    style: 'currency',
+                    currency: 'TRY'
+                }).format(customer.avgOrderValue);
+
+                html += '<tr>';
+                html += '<td>' + customer.customerId + '</td>';
+                html += '<td>' + customer.customerName + '</td>';
+                html += '<td>' + customer.totalOrders + '</td>';
+                html += '<td>' + totalSpentFormatted + '</td>';
+                html += '<td>' + avgOrderFormatted + '</td>';
+                html += '<td>' + formattedDate + '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+            html += '</div>';
+
+            html += '<div class="mt-3">';
+            html += '<strong>İstatistikler:</strong> ';
+            html += 'Toplam ' + customers.length;
+
+            $("#" + containerId).html(html);
+        }
+    });
+</script>

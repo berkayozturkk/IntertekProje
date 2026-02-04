@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Intertek.Data\Intertek.Data.csproj" />
+    <ProjectReference Include="..\Intertek.Model\Intertek.Model.csproj" />
+  </ItemGroup>
+
 </Project>

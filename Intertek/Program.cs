@@ -1,7 +1,20 @@
+using Intertek.Business.Interfaces;
+using Intertek.Business.Services;
+using Intertek.Data.Helpers;
+using Intertek.Data.Repositories;
+using Intertek.Data.Repositories.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var configuration = builder.Configuration;
+builder.Services.AddSingleton<IConfiguration>(configuration);
+
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IDbHelper, DbHelper>();
 
 var app = builder.Build();
 
