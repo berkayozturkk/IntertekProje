@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Intertek.Business/Intertek.Business.csproj" />
+  <Project Path="Intertek.Data/Intertek.Data.csproj" />
+  <Project Path="Intertek.Model/Intertek.Model.csproj" />
+  <Project Path="Intertek/Intertek.csproj" />
+</Solution>
